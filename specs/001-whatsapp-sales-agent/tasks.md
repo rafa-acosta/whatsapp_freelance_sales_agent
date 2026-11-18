@@ -73,15 +73,15 @@ Three levels are kept separate. Passing a lower level does not approve the next 
 
 **Purpose**: Project skeleton matching plan.md "Source Code" and deployment layout.
 
-- [ ] T001 Create the package skeleton under `src/salesagent/` with an `__init__.py` in each of `settings`, `whatsapp`, `orchestration`, `qualification`, `ai`, `guard`, `catalog`, `messages`, `business_calendar`, `persistence`, `notifications`, `admin`, `compliance`, and `logging`
-- [ ] T002 Create `pyproject.toml` at the repository root: Python 3.12; Django (current LTS); `psycopg`; `anthropic`; `django-otp`; `python-dateutil`; `PyYAML`; `pytest`; `pytest-django`
-- [ ] T003 [P] Create `.env.example` at the repository root with placeholder values only for every variable named in research.md R-007 and contracts (no real values, no regions or keys)
-- [ ] T004 [P] Create `pytest.ini` at the repository root with `DJANGO_SETTINGS_MODULE=salesagent.settings.test` and `testpaths = tests`
-- [ ] T005 [P] Create `deploy/Dockerfile`: Python 3.12 base image, non-root user, no secrets copied into the image
-- [ ] T006 Create `deploy/docker-compose.yml` with services `web`, `worker`, and `db` (PostgreSQL). `db` is not published to the host. Configuration comes only from an env file.
+- [x] T001 Create the package skeleton under `src/salesagent/` with an `__init__.py` in each of `settings`, `whatsapp`, `orchestration`, `qualification`, `ai`, `guard`, `catalog`, `messages`, `business_calendar`, `persistence`, `notifications`, `admin`, `compliance`, and `logging`
+- [x] T002 Create `pyproject.toml` at the repository root: Python 3.12; Django (current LTS); `psycopg`; `anthropic`; `django-otp`; `python-dateutil`; `PyYAML`; `pytest`; `pytest-django`
+- [x] T003 [P] Create `.env.example` at the repository root with placeholder values only for every variable named in research.md R-007 and contracts (no real values, no regions or keys)
+- [x] T004 [P] Create `pytest.ini` at the repository root with `DJANGO_SETTINGS_MODULE=salesagent.settings.test` and `testpaths = tests`
+- [x] T005 [P] Create `deploy/Dockerfile`: Python 3.12 base image, non-root user, no secrets copied into the image
+- [x] T006 Create `deploy/docker-compose.yml` with services `web`, `worker`, and `db` (PostgreSQL). `db` is not published to the host. Configuration comes only from an env file.
 - [ ] T007 [P] Create `deploy/reverse-proxy/README.md`: HTTPS termination is the only public entry point. The proxy product is not selected yet (research.md R-017, legal open decision).
 - [ ] T008 [P] Create the content and knowledge directories with `.gitkeep`: `knowledge/services/`, `content/messages/es-CR/`, `content/messages/en/`, `content/messages/pt-BR/`, `config/calendar/`, `tests/unit/`, `tests/contract/`, `tests/integration/`
-- [ ] T009 Create `manage.py` at the repository root and `src/salesagent/settings/__init__.py`
+- [x] T009 Create `manage.py` at the repository root and `src/salesagent/settings/__init__.py`
 
 ---
 
@@ -93,25 +93,25 @@ Three levels are kept separate. Passing a lower level does not approve the next 
 
 ### Settings and secrets
 
-- [ ] T010 Create `src/salesagent/settings/base.py`: every value read from environment variables; no regions, credentials, or API keys hardcoded; `SALESAGENT_ENV` selects production behavior (FR-048, R-007)
-- [ ] T011 [P] Create `src/salesagent/settings/production.py` (secure cookies, HTTPS-only, production template check enabled) and `src/salesagent/settings/test.py` (fake model client and fake email sender, no network)
-- [ ] T012 Create `src/salesagent/settings/secrets.py`: a `SecretValue` wrapper whose `__repr__` and `__str__` mask the value, and an accessor listing every configured secret for the log filter (R-007)
-- [ ] T013 [P] Write `tests/unit/test_settings_secrets.py` first: secret values absent from `repr()` and `str()` of settings; no key-like literals in `src/` (fails until T010 and T012 exist)
+- [x] T010 Create `src/salesagent/settings/base.py`: every value read from environment variables; no regions, credentials, or API keys hardcoded; `SALESAGENT_ENV` selects production behavior (FR-048, R-007)
+- [x] T011 [P] Create `src/salesagent/settings/production.py` (secure cookies, HTTPS-only, production template check enabled) and `src/salesagent/settings/test.py` (fake model client and fake email sender, no network)
+- [x] T012 Create `src/salesagent/settings/secrets.py`: a `SecretValue` wrapper whose `__repr__` and `__str__` mask the value, and an accessor listing every configured secret for the log filter (R-007)
+- [x] T013 [P] Write `tests/unit/test_settings_secrets.py` first: secret values absent from `repr()` and `str()` of settings; no key-like literals in `src/` (fails until T010 and T012 exist)
 
 ### Logging and PII masking
 
-- [ ] T014 [P] Write `tests/unit/test_logging_masking.py` first: phone numbers, email addresses, secret values, and message bodies never appear in INFO-and-above output; identifiers appear only as keyed HMAC (R-018, Principle VI)
-- [ ] T015 Create `src/salesagent/logging/masking.py` (keyed HMAC for identifiers) and `src/salesagent/logging/setup.py` (structured JSON logging, fixed event names from R-018, redaction filter that strips configured secrets)
+- [x] T014 [P] Write `tests/unit/test_logging_masking.py` first: phone numbers, email addresses, secret values, and message bodies never appear in INFO-and-above output; identifiers appear only as keyed HMAC (R-018, Principle VI)
+- [x] T015 Create `src/salesagent/logging/masking.py` (keyed HMAC for identifiers) and `src/salesagent/logging/setup.py` (structured JSON logging, fixed event names from R-018, redaction filter that strips configured secrets)
 
 ### Persistence
 
-- [ ] T016 Create `src/salesagent/persistence/models.py` with a base model (UUID `id`, `created_at`, `updated_at`, `expires_at`) and `Conversation` (`contact_key` keyed hash; `contact_ref` encrypted at host level; `control_state` enum `AI_ACTIVE` / `HUMAN_HANDOFF`; `qualification_state` enum `NEW` / `COLLECTING` / `NEEDS_INFO` / `QUALIFIED` / `NOT_QUALIFIED`; `language_variant` nullable `es-CR` / `en` / `pt-BR`; `language_source` `detected` / `customer_choice`; `lock_version`), per data-model.md
-- [ ] T017 Add `Message` to `src/salesagent/persistence/models.py`: `platform_message_id` string, **unique** ("Deduplicates webhook retries (R-016)"); `message_type` `TEXT` / `UNSUPPORTED_MEDIA`; `body` nullable, "Stored for text messages only"; `source` `CUSTOMER` / `MODEL_DRAFT` / `TEMPLATE` / `FALLBACK`; `guard_result`; `send_status`; `detected_language`
+- [x] T016 Create `src/salesagent/persistence/models.py` with a base model (UUID `id`, `created_at`, `updated_at`, `expires_at`) and `Conversation` (`contact_key` keyed hash; `contact_ref` encrypted at host level; `control_state` enum `AI_ACTIVE` / `HUMAN_HANDOFF`; `qualification_state` enum `NEW` / `COLLECTING` / `NEEDS_INFO` / `QUALIFIED` / `NOT_QUALIFIED`; `language_variant` nullable `es-CR` / `en` / `pt-BR`; `language_source` `detected` / `customer_choice`; `lock_version`), per data-model.md
+- [x] T017 Add `Message` to `src/salesagent/persistence/models.py`: `platform_message_id` string, **unique** ("Deduplicates webhook retries (R-016)"); `message_type` `TEXT` / `UNSUPPORTED_MEDIA`; `body` nullable, "Stored for text messages only"; `source` `CUSTOMER` / `MODEL_DRAFT` / `TEMPLATE` / `FALLBACK`; `guard_result`; `send_status`; `detected_language`
 - [ ] T018 Add `Lead` to `src/salesagent/persistence/models.py` with the FR-010 fields. Constraints quoted from data-model.md: `start_within_months` "integer 0–36, nullable"; `contact_email` "rejected unless `preferred_contact_method = EMAIL`"; `budget_text` "free text with a maximum length; no range is enforced"; `budget_currency` "Stored only when the customer explicitly gave a currency"
 - [ ] T019 Add `HandoffRequest`, `ControlEvent`, and `NotificationAttempt` to `src/salesagent/persistence/models.py`. `ControlEvent.actor` is `CUSTOMER` / `ADMIN` / `SYSTEM` and has **no** `MODEL` value (FR-018e). `ControlEvent` stores no message content (FR-018c).
 - [ ] T020 Add `DeletionRequest` and `DeletionAuditRecord` to `src/salesagent/persistence/models.py`. `DeletionRequest.request_id` is unique. `status` enum: `REGISTERED`, `UNDER_REVIEW`, `ADDITIONAL_VERIFICATION`, `VERIFICATION_FAILED`, `VERIFIED`, `AUTHORIZED`, `EXECUTING`, `COMPLETED`, `REJECTED`, `FAILED`. `DeletionAuditRecord` holds timestamps, status history, and `authorized_action` only.
-- [ ] T021 Generate the initial migration `src/salesagent/persistence/migrations/0001_initial.py` with `python manage.py makemigrations persistence`
-- [ ] T022 [P] Create `src/salesagent/persistence/repositories.py`: conversation lookup by `contact_key` and per-conversation row lock with `select_for_update` (R-016)
+- [x] T021 Generate the initial migration `src/salesagent/persistence/migrations/0001_initial.py` with `python manage.py makemigrations persistence`
+- [x] T022 [P] Create `src/salesagent/persistence/repositories.py`: conversation lookup by `contact_key` and per-conversation row lock with `select_for_update` (R-016)
 
 ### Administrator authentication
 
@@ -122,11 +122,11 @@ Three levels are kept separate. Passing a lower level does not approve the next 
 
 ### WhatsApp transport
 
-- [ ] T027 Write `tests/unit/test_webhook_signature.py` first: HMAC-SHA256 of the raw body with the app secret; constant-time comparison; body not parsed before the check; forged requests rejected (contracts/whatsapp-webhook.md, R-004)
-- [ ] T028 Create `src/salesagent/whatsapp/signature.py` implementing the signature check
-- [ ] T029 Create `src/salesagent/whatsapp/views.py` and `src/salesagent/whatsapp/urls.py`: GET subscription challenge (`hub.verify_token` compared in constant time) and POST receiver at `/webhooks/whatsapp/`. The receiver stores each inbound message once, keyed by platform message ID, and acknowledges within 2 seconds (plan Performance Goals).
-- [ ] T030 Create `src/salesagent/whatsapp/parser.py`: extracts platform message ID, contact ID, and message type. Non-text types become `UNSUPPORTED_MEDIA` and their content is never fetched (FR-037, data-model Message)
-- [ ] T031 [P] Create `src/salesagent/whatsapp/sender.py` (FR-001): session messages inside the service window, access token from configuration; records the send attempt before calling the platform (R-016)
+- [x] T027 Write `tests/unit/test_webhook_signature.py` first: HMAC-SHA256 of the raw body with the app secret; constant-time comparison; body not parsed before the check; forged requests rejected (contracts/whatsapp-webhook.md, R-004)
+- [x] T028 Create `src/salesagent/whatsapp/signature.py` implementing the signature check
+- [x] T029 Create `src/salesagent/whatsapp/views.py` and `src/salesagent/whatsapp/urls.py`: GET subscription challenge (`hub.verify_token` compared in constant time) and POST receiver at `/webhooks/whatsapp/`. The receiver stores each inbound message once, keyed by platform message ID, and acknowledges within 2 seconds (plan Performance Goals).
+- [x] T030 Create `src/salesagent/whatsapp/parser.py`: extracts platform message ID, contact ID, and message type. Non-text types become `UNSUPPORTED_MEDIA` and their content is never fetched (FR-037, data-model Message)
+- [x] T031 [P] Create `src/salesagent/whatsapp/sender.py` (FR-001): session messages inside the service window, access token from configuration; records the send attempt before calling the platform (R-016)
 
 ### External interfaces (model and email)
 
@@ -154,7 +154,7 @@ Three levels are kept separate. Passing a lower level does not approve the next 
 - [ ] T047 Create `src/salesagent/orchestration/control.py`: the single transition function and the `ControlEvent` writer. It is the only code that writes `Conversation.control_state`.
 - [ ] T048 Write `tests/unit/test_inbound_pipeline_order.py` first: steps run in the plan.md order (lock, media check, deletion intent, handoff check, `HUMAN_HANDOFF` silence, extraction, deterministic update, drafting, guard, send)
 - [ ] T049 Create `src/salesagent/orchestration/pipeline.py` implementing that order. It imports interfaces only, never the WhatsApp or model SDK (Principle IX).
-- [ ] T050 Create `src/salesagent/orchestration/worker.py` and `src/salesagent/orchestration/management/commands/process_inbox.py`: consumes the queue table (`status`, `attempts`, `next_attempt_at`), takes a row lock per conversation, processes messages in arrival order per conversation (R-016, FR-031)
+- [x] T050 Create `src/salesagent/orchestration/worker.py` and `src/salesagent/orchestration/management/commands/process_inbox.py`: consumes the queue table (`status`, `attempts`, `next_attempt_at`), takes a row lock per conversation, processes messages in arrival order per conversation (R-016, FR-031)
 
 **Checkpoint**: Foundation ready. User story work can start in parallel.
 
@@ -345,14 +345,14 @@ These tasks close gaps found in the review. Each keeps the checklist format. The
 
 ### M0 additions (technical connectivity)
 
-- [ ] T127 [M0] Add M0 settings to `src/salesagent/settings/base.py`: `WHATSAPP_M0_MODE` (default off), `WHATSAPP_TEST_RECIPIENT_HMACS` (keyed hashes of synthetic test numbers, from environment), `WHATSAPP_M0_RESPONSE_TEXT` (fixed text "Connectivity test OK"), and the Graph API version from configuration. Production settings reject `WHATSAPP_M0_MODE=true` (see T142).
-- [ ] T128 [M0] Write `tests/contract/test_webhook_verification_get.py` first: the GET challenge is returned only for `hub.mode=subscribe` with a matching verify token compared in constant time; anything else returns 403 and the body is not parsed
-- [ ] T129 [M0] Write `tests/contract/test_webhook_duplicate_delivery.py` first: a re-delivered platform message ID yields one `Message`, one queue item, and one reply; the duplicate is acknowledged with 200 (R-016, FR-031)
-- [ ] T130 [M0] Write `tests/contract/test_webhook_m0_flow.py` first, using only synthetic signed payloads. Covers: allowlisted text → 200 within 2 seconds, one stored message and queue item, fixed response sent through the fake sender; unsigned payload → 403 and nothing stored; non-allowlisted sender → 200, nothing stored, no reply, log holds only a keyed hash; the AI client is never constructed
-- [ ] T131 [M0] Create synthetic webhook fixtures in `tests/fixtures/whatsapp/` (text, duplicate, image media, unknown sender, malformed body) using reserved fake numbers, and `tests/fixtures/whatsapp/signing.py` to compute the HMAC signature
-- [ ] T132 [M0] Add the M0 allowlist gate to `src/salesagent/whatsapp/views.py`: when `WHATSAPP_M0_MODE` is on, messages from senders not in the allowlist are dropped before any storage
-- [ ] T133 [M0] Create `src/salesagent/persistence/management/commands/m0_purge_test_data.py`: deletes the M0 test `Conversation` and `Message` rows and prints counts only (data minimization, FR-025)
-- [ ] T134 [M0] Create `deploy/m0-meta-test-setup.md`: Meta developer app and test number setup; HTTPS callback through a temporary tunnel or staging host; verify token and app secret supplied through environment variables; the 24-hour service window (the tester must message first); no templates; no real customer numbers. The file contains no secrets.
+- [x] T127 [M0] Add M0 settings to `src/salesagent/settings/base.py`: `WHATSAPP_M0_MODE` (default off), `WHATSAPP_TEST_RECIPIENT_HMACS` (keyed hashes of synthetic test numbers, from environment), `WHATSAPP_M0_RESPONSE_TEXT` (fixed text "Connectivity test OK"), and the Graph API version from configuration. Production settings reject `WHATSAPP_M0_MODE=true` (see T142).
+- [x] T128 [M0] Write `tests/contract/test_webhook_verification_get.py` first: the GET challenge is returned only for `hub.mode=subscribe` with a matching verify token compared in constant time; anything else returns 403 and the body is not parsed
+- [x] T129 [M0] Write `tests/contract/test_webhook_duplicate_delivery.py` first: a re-delivered platform message ID yields one `Message`, one queue item, and one reply; the duplicate is acknowledged with 200 (R-016, FR-031)
+- [x] T130 [M0] Write `tests/contract/test_webhook_m0_flow.py` first, using only synthetic signed payloads. Covers: allowlisted text → 200 within 2 seconds, one stored message and queue item, fixed response sent through the fake sender; unsigned payload → 403 and nothing stored; non-allowlisted sender → 200, nothing stored, no reply, log holds only a keyed hash; the AI client is never constructed
+- [x] T131 [M0] Create synthetic webhook fixtures in `tests/fixtures/whatsapp/` (text, duplicate, image media, unknown sender, malformed body) using reserved fake numbers, and `tests/fixtures/whatsapp/signing.py` to compute the HMAC signature
+- [x] T132 [M0] Add the M0 allowlist gate to `src/salesagent/whatsapp/views.py`: when `WHATSAPP_M0_MODE` is on, messages from senders not in the allowlist are dropped before any storage
+- [x] T133 [M0] Create `src/salesagent/persistence/management/commands/m0_purge_test_data.py`: deletes the M0 test `Conversation` and `Message` rows and prints counts only (data minimization, FR-025)
+- [x] T134 [M0] Create `deploy/m0-meta-test-setup.md`: Meta developer app and test number setup; HTTPS callback through a temporary tunnel or staging host; verify token and app secret supplied through environment variables; the 24-hour service window (the tester must message first); no templates; no real customer numbers. The file contains no secrets.
 - [ ] T135 [M0] Run the M0 acceptance criteria live and record the results in `specs/001-whatsapp-sales-agent/m0-validation.md`. Record contacts only as keyed hashes and message IDs as keyed hashes.
 
 ### Foundational additions

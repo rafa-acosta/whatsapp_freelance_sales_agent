@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "salesagent"
+version = "0.1.0"
+description = "WhatsApp freelance sales assistant (MVP). Not approved for production use."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "Django>=5.2,<5.3",
+    "psycopg[binary]>=3.2,<4",
+    "anthropic>=0.40",
+    "django-otp>=1.5,<2",
+    "python-dateutil>=2.9,<3",
+    "PyYAML>=6.0,<7",
+    "gunicorn>=23,<28",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "pytest-django>=4.9,<5",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
