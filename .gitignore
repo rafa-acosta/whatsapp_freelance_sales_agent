@@ -1,0 +1,104 @@
+# ---------------------------------------------------------------
+# Project .gitignore: WhatsApp Freelance Sales Agent
+# Spec Kit artifacts (specs/, .specify/ except local state, .claude/skills/) ARE tracked.
+# ---------------------------------------------------------------
+
+# Python: bytecode, caches, packaging, test and tool caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version.local
+
+# Environment files and secrets (FR-048). .env.example is tracked on purpose.
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+secrets/
+credentials/
+*credentials*.json
+*.pem
+*.key
+*.p12
+*.pfx
+service-account*.json
+.aws/
+.ssh/
+.netrc
+
+# Django
+*.log
+logs/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+*.mo
+
+# Local databases and dumps
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+pgdata/
+postgres-data/
+
+# Docker local overrides and volumes
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Temporary and editor files
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
+
+# Claude Code per-user settings (shared settings in .claude/settings.json remain tracked)
+.claude/settings.local.json
+.claude/*.local.*
+
+# Coverage and build output
+coverage/
+.cache/
